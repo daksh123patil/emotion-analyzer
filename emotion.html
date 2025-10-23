@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emotion Analyzer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f0f8ff;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #4a90e2;
+      font-weight: bold;
+      text-align: center;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .happy { background-color: #fffacd; }
+    .anxiety { background-color: #ffe4e1; }
+    .sad { background-color: #e6e6fa; }
+    .angry { background-color: #ffe4b5; }
+    .neutral { background-color: #f5f5f5; }
+    .progress { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Emotion Analyzer</h1>
+    <p class="text-center">
+      Short questionnaire to detect your dominant emotion.<br>
+      Not a diagnosis — for awareness and reflection.
+    </p>
+
+    <!-- Step 1: Input -->
+    <div id="input-section">
+      <textarea id="problem" class="form-control" rows="3" placeholder="Describe your current concern (optional)..."></textarea>
+      <button id="start-btn" class="btn btn-primary mt-3 w-100" onclick="startQuestions()">Start Questions</button>
+    </div>
+
+    <!-- Step 2: Questions -->
+    <div id="questions-section" style="display: none;">
+      <h4>Answer These Questions</h4>
+      <div class="progress">
+        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%">0%</div>
+      </div>
+      <div id="questions"></div>
+      <button id="submit-questions-btn" class="btn btn-success mt-3 w-100" onclick="submitQuestions()" style="display: none;">Get My Result</button>
+    </div>
+
+    <!-- Step 3: Result -->
+    <div id="result-section" style="display: none;">
+      <div id="result" class="result"></div>
+      <p class="text-muted small text-center">
+        Disclaimer: This is for awareness only. If you're distressed, please reach out to a professional.
+      </p>
+      <button class="btn btn-secondary w-100" onclick="resetApp()">Start Over</button>
+    </div>
+  </div>
+
+  <script>
+    let questionIndex = 0;
+    let answers = [];
+
+    const questions = [
+      { text: "Do you feel physically restless or find it hard to concentrate?", emotion: 'anxiety' },
+      { text: "Are you worrying about future events or 'what if' situations?", emotion: 'anxiety' },
+      { text: "Do you feel a sense of loss or regret over something?", emotion: 'sad' },
+      { text: "Have you lost interest in activities you usually enjoy?", emotion: 'sad' },
+      { text: "Do you feel irritated or blame others for your situation?", emotion: 'angry' },
+      { text: "Do you often feel physical tension (like clenched fists or jaw)?", emotion: 'angry' },
+      { text: "Do you feel positive or proud about recent achievements?", emotion: 'happy' },
+      { text: "Do you feel joyful or connected during social interactions?", emotion: 'happy' }
+    ];
+
+    function startQuestions() {
+      questionIndex = 0;
+      answers = [];
+      document.getElementById('input-section').style.display = 'none';
+      document.getElementById('questions-section').style.display = 'block';
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const progressBar = document.getElementById('progress-bar');
+      const total = questions.length;
+      if (questionIndex < total) {
+        const q = questions[questionIndex];
+        const progress = Math.round(((questionIndex) / total) * 100);
+        progressBar.style.width = `${progress}%`;
+        progressBar.textContent = `Question ${questionIndex + 1} of ${total}`;
+        document.getElementById('questions').innerHTML = `
+          <p>${q.text}</p>
+          <button class="btn btn-outline-primary me-2" onclick="answerQuestion('yes')">Yes</button>
+          <button class="btn btn-outline-secondary me-2" onclick="answerQuestion('no')">No</button>
+        `;
+      } else {
+        document.getElementById('questions').innerHTML = `<p>All questions answered. Click below to see your result.</p>`;
+        document.getElementById('submit-questions-btn').style.display = 'block';
+      }
+    }
+
+    function answerQuestion(answer) {
+      answers.push({ question: questions[questionIndex].text, answer, emotion: questions[questionIndex].emotion });
+      questionIndex++;
+      loadQuestion();
+    }
+
+    function submitQuestions() {
+      const scores = { happy: 0, anxiety: 0, sad: 0, angry: 0 };
+      answers.forEach(ans => {
+        if (ans.answer === 'yes') scores[ans.emotion]++;
+      });
+
+      let maxScore = Math.max(...Object.values(scores));
+      let currentEmotion = maxScore === 0 ? 'neutral' : Object.keys(scores).find(key => scores[key] === maxScore);
+
+      document.getElementById('questions-section').style.display = 'none';
+      document.getElementById('result-section').style.display = 'block';
+
+      const tips = {
+        happy: "You're showing happiness! Keep practicing gratitude and mindfulness.",
+        anxiety: "This suggests anxiety. Try deep breathing or grounding exercises.",
+        sad: "You might be feeling sad. Talk to someone you trust and care for yourself.",
+        angry: "Signs of anger detected. Try calming activities like walking or music.",
+        neutral: "Mixed signals. Reflect on your emotions or retake the test later."
+      };
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.className = `result ${currentEmotion}`;
+      resultDiv.innerHTML = `
+        <h4>You might be feeling: ${currentEmotion.toUpperCase()}</h4>
+        <p>${tips[currentEmotion]}</p>
+      `;
+    }
+
+    function resetApp() {
+      questionIndex = 0;
+      answers = [];
+      document.getElementById('problem').value = '';
+      document.getElementById('input-section').style.display = 'block';
+      document.getElementById('questions-section').style.display = 'none';
+      document.getElementById('result-section').style.display = 'none';
+      document.getElementById('submit-questions-btn').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
