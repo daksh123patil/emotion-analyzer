@@ -1,75 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Emotion Analyzer | Home</title>
-<link rel="icon" href="favicon.png" type="image/png"> 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" href="favicon.png" type="image/png">
   <style>
+    :root {
+      --bg-light: #f5f9ff;
+      --text-light: #222;
+      --nav-light: #4a90e2;
+      --footer-light: #4a90e2;
+
+      --bg-dark: #101820;
+      --text-dark: #f2f5fa;
+      --nav-dark: #1f2a38;
+      --footer-dark: #1f2a38;
+    }
+
+    [data-theme="light"] {
+      --bg: var(--bg-light);
+      --text: var(--text-light);
+      --nav: var(--nav-light);
+      --footer: var(--footer-light);
+    }
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --text: var(--text-dark);
+      --nav: var(--nav-dark);
+      --footer: var(--footer-dark);
+    }
+
     body {
-      background: linear-gradient(135deg, #dfe9f3 0%, #ffffff 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #333;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Poppins", sans-serif;
+      transition: background 0.4s, color 0.4s;
     }
+
     .navbar {
-      background-color: #4a90e2;
+      background-color: var(--nav);
+      transition: background 0.4s;
     }
-    .navbar-brand, .nav-link { 
+
+    .navbar-brand, .nav-link {
       color: white !important;
     }
+
     .hero {
       text-align: center;
       padding: 100px 20px;
+      background: url('emotion-bg.jpg') center/cover no-repeat;
+      border-radius: 10px;
+      color: white;
     }
+
     .hero h1 {
-      color: #4a90e2;
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 2.5rem;
     }
-    .hero p {
-      font-size: 1.2rem;
-      margin-top: 15px;
-      color: #555;
-    }
+
     .btn-start {
-      margin-top: 30px;
-      padding: 12px 30px;
+      margin-top: 25px;
       font-size: 1.2rem;
+      padding: 12px 30px;
       border-radius: 30px;
     }
+
     footer {
+      background: var(--footer);
+      color: white;
       text-align: center;
       padding: 20px;
-      background: #4a90e2;
+      margin-top: 80px;
+      transition: background 0.4s;
+    }
+
+    .theme-toggle {
+      background: transparent;
+      border: 2px solid white;
       color: white;
-      margin-top: 50px;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <!-- Navigation -->
   <nav class="navbar navbar-expand-lg">
-    <div class="container">
+    <div class="container d-flex justify-content-between align-items-center">
       <a class="navbar-brand" href="index.html">Emotion Analyzer</a>
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto">
+      <div>
+        <ul class="navbar-nav me-3">
           <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="emotion.html">Test</a></li>
           <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
         </ul>
       </div>
+      <button class="theme-toggle" id="themeToggle" title="Switch Theme">🌙</button>
     </div>
   </nav>
 
-  <!-- Hero Section -->
   <section class="hero">
-    <h1>Welcome to Emotion Analyzer</h1>
-    <p>Discover your current emotional state through a quick, science-inspired questionnaire.</p>
-    <a href="emotion.html" class="btn btn-primary btn-start">Start the Test</a>
+    <div style="background: rgba(0,0,0,0.5); padding: 60px; border-radius: 10px;">
+      <h1>Welcome to Emotion Analyzer</h1>
+      <p>Discover your emotions and improve your self-awareness in just 2 minutes.</p>
+      <a href="emotion.html" class="btn btn-light btn-start">Start the Test</a>
+    </div>
   </section>
 
   <footer>
-    © 2025 Emotion Analyzer | Created by Daksh Patil
+    © 2025 Emotion Analyzer | Built by Daksh Patil
   </footer>
+
+  <script>
+    const themeToggle = document.getElementById("themeToggle");
+    const html = document.documentElement;
+
+    // Load saved theme
+    if (localStorage.getItem("theme")) {
+      html.setAttribute("data-theme", localStorage.getItem("theme"));
+      themeToggle.textContent = localStorage.getItem("theme") === "dark" ? "☀️" : "🌙";
+    }
+
+    themeToggle.addEventListener("click", () => {
+      const current = html.getAttribute("data-theme");
+      const newTheme = current === "light" ? "dark" : "light";
+      html.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+      themeToggle.textContent = newTheme === "dark" ? "☀️" : "🌙";
+    });
+  </script>
 </body>
 </html>
